@@ -43,26 +43,26 @@ class LeNet(nn.Module):
 class LeNetSequetial(nn.Module):
     def __init__(self, classes):
         super(LeNetSequetial, self).__init__()
-        self.features = nn.Sequential(
-            nn.Conv2d(3, 6, 5),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-            nn.Conv2d(6, 16, 5),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2)
+        self.features = nn.Sequential( # 输入 [16, 3, 32, 32]
+            nn.Conv2d(3, 6, 5), #6个不同的卷积核，每个核为3通道核大小为5；[16, 6, 28, 28]
+            nn.ReLU(), # [16, 6, 28, 28]
+            nn.MaxPool2d(2, 2), # [16, 6, 14, 14]
+            nn.Conv2d(6, 16, 5), # [16, 16, 10, 10]
+            nn.ReLU(), # [16, 16, 10, 10]
+            nn.MaxPool2d(2, 2) # [16, 16, 5, 5]
         )
-        self.classifier = nn.Sequential(
-            nn.Linear(16*5*5, 120),
-            nn.ReLU(),
-            nn.Linear(120, 84),
-            nn.ReLU(),
-            nn.Linear(84, classes)
+        self.classifier = nn.Sequential( # 输入 [16, 400]
+            nn.Linear(16*5*5, 120), # [16, 120]
+            nn.ReLU(), # [16, 120]
+            nn.Linear(120, 84), # [16, 84]
+            nn.ReLU(), # [16, 84]
+            nn.Linear(84, classes) # [16, classes]
         )
 
     def forward(self, x):
-        x = self.features(x)
-        x = x.view(x.size()[0], -1)
-        x = self.classifier(x)
+        x = self.features(x) # [16, 16, 5, 5] [batch, 通道数, 高, 宽]
+        x = x.view(x.size()[0], -1) # [16, 16*5*5] [batch, 特征数 = 通道数*高*宽]
+        x = self.classifier(x) # [16, classes] 具体数值含义为属于哪个类别的概率
         return x
 
     def initialize_weights(self):
